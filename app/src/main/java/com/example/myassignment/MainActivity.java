@@ -185,8 +185,8 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 String billName = spnBillName.getSelectedItem().toString();
-                                String bookName = spnBookName.getSelectedItem().toString();
-                                String numberStatistic = edtNumberStatistic.getText().toString();
+                                final String bookName = spnBookName.getSelectedItem().toString();
+                                final String numberStatistic = edtNumberStatistic.getText().toString();
                                 final Map<String, Object> statistic = new HashMap<>();
                                 statistic.put("billName", billName);
                                 statistic.put("bookName", bookName);
@@ -203,21 +203,43 @@ public class MainActivity extends AppCompatActivity {
                                                         Toast.makeText(MainActivity.this, "Hóa đơn chi tiết này có rồi", Toast.LENGTH_SHORT).show();
                                                         alertDialogStatistic.dismiss();
                                                     } else {
-                                                        db.collection("statistic")
-                                                                .add(statistic)
-                                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                        db.collection("book").whereEqualTo("bookName", bookName)
+                                                                .get()
+                                                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                                                     @Override
-                                                                    public void onSuccess(DocumentReference documentReference) {
-                                                                        Toast.makeText(MainActivity.this, "Thêm hóa đơn chi tiết thành công", Toast.LENGTH_SHORT).show();
-                                                                        alertDialogStatistic.dismiss();
-                                                                    }
-                                                                })
-                                                                .addOnFailureListener(new OnFailureListener() {
-                                                                    @Override
-                                                                    public void onFailure(@NonNull Exception e) {
-                                                                        Log.e("TAG", "Error adding document", e);
+                                                                    public void onComplete(@NonNull final Task<QuerySnapshot> task) {
+                                                                        if (Integer.valueOf((String) task.getResult().getDocuments().get(0).get("number")) - Integer.valueOf(numberStatistic) >= 0) {
+                                                                            db.collection("statistic")
+                                                                                    .add(statistic)
+                                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                                                        @Override
+                                                                                        public void onSuccess(DocumentReference documentReference) {
+                                                                                            db.collection("book").document(task.getResult().getDocuments().get(0).getId())
+                                                                                                    .update("number", String.valueOf(Integer.valueOf((String) task.getResult().getDocuments().get(0).get("number")) - Integer.valueOf(numberStatistic)))
+                                                                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                        @Override
+                                                                                                        public void onSuccess(Void aVoid) {
+                                                                                                            Log.e("thành công", "thành công");
+                                                                                                        }
+                                                                                                    });
+                                                                                            Toast.makeText(MainActivity.this, "Thêm hóa đơn chi tiết thành công", Toast.LENGTH_SHORT).show();
+                                                                                            alertDialogStatistic.dismiss();
+                                                                                        }
+                                                                                    })
+                                                                                    .addOnFailureListener(new OnFailureListener() {
+                                                                                        @Override
+                                                                                        public void onFailure(@NonNull Exception e) {
+                                                                                            Log.e("TAG", "Error adding document", e);
+                                                                                        }
+                                                                                    });
+
+
+                                                                        }else {
+                                                                            Toast.makeText(MainActivity.this, "Số lượng nhập lớn hơn số sách đang có", Toast.LENGTH_SHORT).show();
+                                                                        }
                                                                     }
                                                                 });
+
                                                     }
 
                                                 } else {
