@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Quản lý thư viện sách</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Nguyễn Hoàng Nam</string>
+    <string name="nav_header_subtitle">Namnhph09434</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="Logout">Log out</string>
+
+    <string name="menu_home">Home</string>
+    <string name="meny_category">Thể loại</string>
+    <string name="menu_bill">Hoá đơn</string>
+    <string name="menu_book">Sách</string>
+    <string name="menu_best_sale">Sách bán chạy nhất</string>
+    <string name="menu_statistic">Thống kê</string>
+
+    <string name="home_second">Home Second</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_user">User</string>
+</resources>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    tools:context=".ui.User">
+
+    <TextView
+        android:textSize="20sp"
+        android:gravity="center"
+        android:id="@+id/tvName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="" />
+
+
+
+
+
+    <LinearLayout
+        android:id="@+id/ln_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvName"
+        android:orientation="horizontal">
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/btnShow"
+        android:layout_below="@id/ln_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hiện thị danh sách người dùng"/>
+
+    <LinearLayout
+        android:id="@+id/infor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnShow"
+        android:layout_marginTop="-9dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tên người dùng" />
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Số điện thoại" />
+
+        <TextView
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Địa chỉ" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lvListUser"
+        android:layout_below="@id/infor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
+</RelativeLayout>
