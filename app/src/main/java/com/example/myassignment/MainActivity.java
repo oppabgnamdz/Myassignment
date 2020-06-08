@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -80,22 +81,41 @@ public class MainActivity extends AppCompatActivity {
                                 String name = edtName.getText().toString();
                                 String description = edtDescription.getText().toString();
                                 String position = edtPosition.getText().toString();
-                                Map<String, Object> category = new HashMap<>();
+                                final Map<String, Object> category = new HashMap<>();
                                 category.put("name", name);
                                 category.put("description", description);
                                 category.put("position", position);
                                 db.collection("category")
-                                        .add(category)
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        .whereEqualTo("name", name)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                             @Override
-                                            public void onSuccess(DocumentReference documentReference) {
-                                                Toast.makeText(MainActivity.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
-                                                dialog.dismiss();
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    if (task.getResult().size() > 0) {
+                                                        Toast.makeText(MainActivity.this, "Thể loại này đã có rồi", Toast.LENGTH_SHORT).show();
+                                                        dialog.dismiss();
+                                                    } else {
+                                                        db.collection("category")
+                                                                .add(category)
+                                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                                    @Override
+                                                                    public void onSuccess(DocumentReference documentReference) {
+                                                                        Toast.makeText(MainActivity.this, "Thêm thể loại thành công", Toast.LENGTH_SHORT).show();
+                                                                        dialog.dismiss();
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Log.e("TAG", "Error adding document", e);
+                                                                    }
+                                                                });
+                                                    }
+
+                                                } else {
+                                                    Log.d("TAG", "Error getting documents: ", task.getException());
+                                                }
                                             }
                                         });
 
@@ -112,10 +132,107 @@ public class MainActivity extends AppCompatActivity {
                         dialog.show();
                         break;
                     case "statistic":
-                        Toast.makeText(MainActivity.this, "Bạn đang ở thống kê", Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builderStatistic = new AlertDialog.Builder(MainActivity.this);
+                        View viewStatistic = getLayoutInflater().inflate(R.layout.layout_insert_statistic, null);
+                        final Spinner spnBillName = viewStatistic.findViewById(R.id.spnBillName);
+                        final Spinner spnBookName = viewStatistic.findViewById(R.id.spnBookName);
+                        final EditText edtNumberStatistic = viewStatistic.findViewById(R.id.edtNumber);
+                        Button btnCancelStatistic = viewStatistic.findViewById(R.id.btnCancel);
+                        Button btnConfirmStatistic = viewStatistic.findViewById(R.id.btnConfirm);
+                        final ArrayList<String> billNames = new ArrayList<>();
+                        final ArrayList<String> bookNames = new ArrayList<>();
+                        db.collection("bill")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                billNames.add((String) document.getData().get("billName"));
+                                            }
+                                            ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, billNames);
+                                            spnBillName.setAdapter(arrayAdapter);
+                                        } else {
+                                        }
+                                    }
+                                });
+                        db.collection("book")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                bookNames.add((String) document.getData().get("bookName"));
+                                            }
+                                            ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, bookNames);
+                                            spnBookName.setAdapter(arrayAdapter);
+                                        } else {
+                                        }
+                                    }
+                                });
+                        builderStatistic.setView(viewStatistic);
+
+                        final AlertDialog alertDialogStatistic = builderStatistic.create();
+                        alertDialogStatistic.show();
+                        btnCancelStatistic.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alertDialogStatistic.dismiss();
+                            }
+                        });
+                        btnConfirmStatistic.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String billName = spnBillName.getSelectedItem().toString();
+                                String bookName = spnBookName.getSelectedItem().toString();
+                                String numberStatistic = edtNumberStatistic.getText().toString();
+                                final Map<String, Object> statistic = new HashMap<>();
+                                statistic.put("billName", billName);
+                                statistic.put("bookName", bookName);
+                                statistic.put("number", numberStatistic);
+                                db.collection("statistic")
+                                        .whereEqualTo("billName", billName)
+                                        .whereEqualTo("bookName", bookName)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    if (task.getResult().size() > 0) {
+                                                        Toast.makeText(MainActivity.this, "Hóa đơn chi tiết này có rồi", Toast.LENGTH_SHORT).show();
+                                                        alertDialogStatistic.dismiss();
+                                                    } else {
+                                                        db.collection("statistic")
+                                                                .add(statistic)
+                                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                                    @Override
+                                                                    public void onSuccess(DocumentReference documentReference) {
+                                                                        Toast.makeText(MainActivity.this, "Thêm hóa đơn chi tiết thành công", Toast.LENGTH_SHORT).show();
+                                                                        alertDialogStatistic.dismiss();
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Log.e("TAG", "Error adding document", e);
+                                                                    }
+                                                                });
+                                                    }
+
+                                                } else {
+                                                    Log.d("TAG", "Error getting documents: ", task.getException());
+                                                }
+                                            }
+                                        });
+
+
+                            }
+                        });
+
+
                         break;
                     case "book":
-                        database = new Database(getApplicationContext());
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                         View view1 = getLayoutInflater().inflate(R.layout.layout_insert_book, null);
                         final EditText edtBookName = view1.findViewById(R.id.edtBookName);
@@ -128,32 +245,78 @@ public class MainActivity extends AppCompatActivity {
                         Button btnCancel1 = view1.findViewById(R.id.btnCancel);
                         final Spinner spinner = view1.findViewById(R.id.spinner);
                         builder.setView(view1);
-                        ArrayList<String> strings = new ArrayList<>();
-                        for (int i = 0; i < database.getAllCategory().size(); i++) {
-                            strings.add(database.getAllCategory().get(i).getName());
-                        }
-                        Log.e("data", strings + "");
-                        ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, strings);
-                        spinner.setAdapter(arrayAdapter);
+                        final ArrayList<String> strings = new ArrayList<>();
+                        db.collection("category")
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                strings.add((String) document.getData().get("name"));
+                                            }
+                                            ArrayAdapter arrayAdapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, strings);
+                                            spinner.setAdapter(arrayAdapter);
+                                        } else {
+                                        }
+                                    }
+                                });
+
                         final AlertDialog alertDialog = builder.create();
                         alertDialog.show();
                         btnConfirm1.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                database = new Database(getApplicationContext());
                                 String bookName = edtBookName.getText().toString();
                                 String categoryBook = spinner.getSelectedItem().toString();
                                 String title = edtTitle.getText().toString();
                                 String author = edtAuthor.getText().toString();
                                 String date = edtDate.getText().toString();
-                                long money = Long.parseLong(edtMoney.getText().toString());
-                                int number = Integer.parseInt(edtNumber.getText().toString());
-                                long result = database.inserBook(new Book(bookName, categoryBook, title, author, date, money, number));
-                                if (result > 0) {
-                                    Toast.makeText(MainActivity.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(MainActivity.this, "Thêm thất bại", Toast.LENGTH_SHORT).show();
-                                }
+                                String money = edtMoney.getText().toString();
+                                String number = edtNumber.getText().toString();
+                                final Map<String, Object> book = new HashMap<>();
+                                book.put("bookName", bookName);
+                                book.put("categoryBook", categoryBook);
+                                book.put("title", title);
+                                book.put("date", date);
+                                book.put("money", money);
+                                book.put("number", number);
+                                book.put("author", author);
+                                db.collection("book")
+                                        .whereEqualTo("bookName", bookName)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    if (task.getResult().size() > 0) {
+                                                        Toast.makeText(MainActivity.this, "Sách này đã có rồi", Toast.LENGTH_SHORT).show();
+                                                        alertDialog.dismiss();
+                                                    } else {
+                                                        db.collection("book")
+                                                                .add(book)
+                                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                                    @Override
+                                                                    public void onSuccess(DocumentReference documentReference) {
+                                                                        Toast.makeText(MainActivity.this, "Thêm sách thành công", Toast.LENGTH_SHORT).show();
+                                                                        alertDialog.dismiss();
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Log.e("TAG", "Error adding document", e);
+                                                                    }
+                                                                });
+                                                    }
+
+                                                } else {
+                                                    Log.d("TAG", "Error getting documents: ", task.getException());
+                                                }
+                                            }
+                                        });
+
+
                                 navController.navigate(R.id.nav_book);
                                 alertDialog.dismiss();
                             }
@@ -167,7 +330,71 @@ public class MainActivity extends AppCompatActivity {
 
                         break;
                     case "bill":
-                        Toast.makeText(MainActivity.this, "Bạn đang ở hóa đơn", Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builderBill = new AlertDialog.Builder(MainActivity.this);
+                        View viewBill = getLayoutInflater().inflate(R.layout.layout_insert_bill, null);
+                        builderBill.setView(viewBill);
+                        final EditText edtBillName = viewBill.findViewById(R.id.edtBillName);
+                        final DatePicker datePicker = viewBill.findViewById(R.id.datePicker);
+                        Button btnConfirmBill = viewBill.findViewById(R.id.btnConfirm);
+                        Button btnCancelBill = viewBill.findViewById(R.id.btnCancel);
+                        final AlertDialog alerDiaLogBill = builderBill.create();
+                        alerDiaLogBill.show();
+                        btnCancelBill.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alerDiaLogBill.dismiss();
+                            }
+                        });
+                        btnConfirmBill.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String billName = edtBillName.getText().toString();
+                                int day = datePicker.getDayOfMonth();
+                                int month = datePicker.getMonth() + 1;
+                                int year = datePicker.getYear();
+                                final Map<String, Object> bill = new HashMap<>();
+                                bill.put("billName", billName);
+                                bill.put("day", day);
+                                bill.put("month", month);
+                                bill.put("year", year);
+
+                                db.collection("bill")
+                                        .whereEqualTo("billName", billName)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    if (task.getResult().size() > 0) {
+                                                        Toast.makeText(MainActivity.this, "Mã hóa đơn đã có rồi", Toast.LENGTH_SHORT).show();
+                                                        alerDiaLogBill.dismiss();
+                                                    } else {
+                                                        db.collection("bill")
+                                                                .add(bill)
+                                                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                                    @Override
+                                                                    public void onSuccess(DocumentReference documentReference) {
+                                                                        Toast.makeText(MainActivity.this, "Thêm hóa dơn thành công", Toast.LENGTH_SHORT).show();
+                                                                        alerDiaLogBill.dismiss();
+                                                                        navController.navigate(R.id.nav_bill);
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        Log.e("TAG", "Error adding document", e);
+                                                                    }
+                                                                });
+                                                    }
+
+                                                } else {
+                                                    Log.d("TAG", "Error getting documents: ", task.getException());
+                                                }
+                                            }
+                                        });
+
+                            }
+                        });
                         break;
                     case "user":
                         AlertDialog.Builder builderUser = new AlertDialog.Builder(MainActivity.this);

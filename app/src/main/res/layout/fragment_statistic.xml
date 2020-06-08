@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.Statistic">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <EditText
+        android:id="@+id/edtMonth"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="day la thong ke" />
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="Nhập tháng muốn lọc vào đây" />
 
-</FrameLayout>
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xác nhận" />
+
+    <ListView
+        android:id="@+id/lvListStatistic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

@@ -157,7 +157,7 @@ public class Database extends SQLiteOpenHelper {
             String date = cursor.getString(4);
             String money = cursor.getString(5);
             String number = cursor.getString(6);
-            Book book = new Book(bookName, categoryName, title, author, date, Long.parseLong(money), Integer.parseInt(number));
+            Book book = new Book(bookName, categoryName, title, author, date, money, number);
             books.add(book);
             cursor.moveToNext();
 

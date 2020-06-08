@@ -6,8 +6,18 @@ public class Book {
     private String title;
     private String author;
     private String date;
-    private long money;
-    private int number;
+    private String money;
+    private String number;
+
+    public Book(String bookName, String categoryName, String title, String author, String date, String money, String number) {
+        this.bookName = bookName;
+        this.categoryName = categoryName;
+        this.title = title;
+        this.author = author;
+        this.date = date;
+        this.money = money;
+        this.number = number;
+    }
 
     public String getBookName() {
         return bookName;
@@ -49,29 +59,19 @@ public class Book {
         this.date = date;
     }
 
-    public long getMoney() {
+    public String getMoney() {
         return money;
     }
 
-    public void setMoney(long money) {
+    public void setMoney(String money) {
         this.money = money;
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public Book(String bookName, String categoryName, String title, String author, String date, long money, int number) {
-        this.bookName = bookName;
-        this.categoryName = categoryName;
-        this.title = title;
-        this.author = author;
-        this.date = date;
-        this.money = money;
+    public void setNumber(String number) {
         this.number = number;
     }
 }
