@@ -11,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:hint="Nhập tháng muốn lọc vào đây" />
+        android:maxLength="2"
+        android:hint="Nhập tháng muốn lọc vào đây"
+        android:inputType="number" />
 
     <Button
         android:id="@+id/btnConfirm"

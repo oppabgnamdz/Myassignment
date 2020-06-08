@@ -1,14 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.BestSale">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="sale" />
 
-</FrameLayout>
+    <EditText
+        android:gravity="center"
+        android:id="@+id/edtDay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number"
+        android:hint="Nhập ngày (có thể bỏ qua)"
+        android:maxLength="2"
+       />
+
+    <EditText
+        android:gravity="center"
+        android:id="@+id/edtMonth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Nhập tháng"
+        android:inputType="number"
+        android:maxLength="2"
+       />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xác nhận" />
+
+    <ListView
+        android:id="@+id/lvListBestSale"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
